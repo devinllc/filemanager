@@ -24,7 +24,7 @@ const Login = ({ login }) => {
 
                 // First, check if the API is accessible
                 try {
-                    await axios.get('/health/', {
+                    await axios.get('/api/health', {
                         timeout: 3000,
                         // Don't throw error for status codes
                         validateStatus: () => true

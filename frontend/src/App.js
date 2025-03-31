@@ -108,7 +108,7 @@ function App() {
     // Check if API is reachable
     const checkApiConnectivity = async () => {
       try {
-        await axios.get(`${API_URL}/health/`, {
+        await axios.get(`/api/health`, {
           timeout: 5000,
           // Don't throw error for status codes
           validateStatus: () => true

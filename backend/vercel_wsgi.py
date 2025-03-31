@@ -29,7 +29,22 @@ def handler(request, **kwargs):
                 "environment": "Vercel"
             }),
             "headers": {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            }
+        }
+    
+    # Handle OPTIONS requests for CORS preflight
+    if request.get("method") == "OPTIONS":
+        return {
+            "statusCode": 204,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Max-Age": "86400"
             }
         }
     
@@ -45,6 +60,7 @@ def handler(request, **kwargs):
                 "message": str(e)
             }),
             "headers": {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             }
         } 
