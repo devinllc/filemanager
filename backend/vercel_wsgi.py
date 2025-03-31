@@ -19,8 +19,10 @@ application = get_wsgi_application()
 def handler(request, **kwargs):
     """Vercel serverless handler"""
     
-    # Special case for health checks to avoid Django for simple checks
-    if request.get("path", "").strip("/") == "api/health":
+    # Simplify path handling to avoid double /api/api
+    path = request.get("path", "").strip("/")
+    if path == "api/health" or path == "health":
+        # Direct health check response
         return {
             "statusCode": 200,
             "body": json.dumps({
@@ -30,9 +32,10 @@ def handler(request, **kwargs):
             }),
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization"
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Credentials": "true"
             }
         }
     
@@ -41,15 +44,16 @@ def handler(request, **kwargs):
         return {
             "statusCode": 204,
             "headers": {
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Credentials": "true",
                 "Access-Control-Max-Age": "86400"
             }
         }
     
+    # For all other Django requests
     try:
-        # For all other routes, use Django
         return application(request, **kwargs)
     except Exception as e:
         # Return error as JSON
@@ -57,10 +61,12 @@ def handler(request, **kwargs):
             "statusCode": 500,
             "body": json.dumps({
                 "error": "Server Error",
-                "message": str(e)
+                "message": str(e),
+                "path": path
             }),
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
+                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                "Access-Control-Allow-Credentials": "true"
             }
         } 

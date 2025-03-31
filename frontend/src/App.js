@@ -16,7 +16,7 @@ import Navbar from './components/layout/Navbar';
 
 // Set axios defaults
 axios.defaults.baseURL = 'https://filemanager-sandy.vercel.app/api';
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 // Add a request interceptor to add the auth token to requests
 axios.interceptors.request.use(
@@ -111,7 +111,9 @@ function App() {
         await axios.get(`/api/health`, {
           timeout: 5000,
           // Don't throw error for status codes
-          validateStatus: () => true
+          validateStatus: () => true,
+          // Don't send credentials for this check
+          withCredentials: false
         });
         // API is reachable, clear any existing connection errors
         if (error && error.includes('cannot connect to the backend')) {
