@@ -1,5 +1,5 @@
 // API URL Configuration
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8002';
+const API_URL = process.env.REACT_APP_API_URL || 'https://filemanager-sandy.vercel.app/api';
 
 // S3 Configuration
 const S3_BUCKET = process.env.REACT_APP_S3_BUCKET || 'trisha.vid.ip';

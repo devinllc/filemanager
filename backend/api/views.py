@@ -20,6 +20,7 @@ from django.db import models
 from django.utils import timezone
 import datetime
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -303,3 +304,8 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    return Response({"status": "ok", "message": "API is running"})

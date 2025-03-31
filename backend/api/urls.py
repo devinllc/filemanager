@@ -16,4 +16,5 @@ urlpatterns = [
     path('profile/', views.UserProfileView.as_view(), name='profile'),
     path('dashboard-stats/', views.dashboard_stats, name='dashboard-stats'),
     path('users/me/', views.UserViewSet.as_view({'get': 'me', 'patch': 'update_me', 'put': 'update_me'}), name='user-me'),
+    path('health/', views.health_check, name='health_check'),
 ] 

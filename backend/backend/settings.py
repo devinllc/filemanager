@@ -139,6 +139,7 @@ MONGO_DB = 'filemanager_db'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'https://filemanager-sandy.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -246,7 +247,12 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'api.User'
 
 # CSRF configuration
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8002']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000', 
+    'http://localhost:8002',
+    'https://filemanager-sandy.vercel.app',
+]
 
 # Firebase Configuration
 firebase_project_id = os.environ.get('FIREBASE_PROJECT_ID')

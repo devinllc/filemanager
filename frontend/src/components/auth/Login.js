@@ -43,6 +43,11 @@ const Login = ({ login }) => {
                         login(res.data);
                         return true;
                     } catch (traditionalError) {
+                        console.error('Traditional login error:', traditionalError);
+                        // Check if it's a network error
+                        if (traditionalError.message && traditionalError.message.includes('Network Error')) {
+                            throw new Error('Cannot connect to the server. Please check your internet connection or try again later.');
+                        }
                         // Both Firebase and traditional login failed
                         throw new Error(firebaseError.message || 'Authentication failed');
                     }
