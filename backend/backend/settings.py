@@ -154,6 +154,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://filemanager-sandy.vercel.app',
     'https://frrontend.vercel.app'
 ]
+# Also allow all origins as a fallback
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -167,15 +169,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    '*',
 ]
 
 # AWS S3 Configuration

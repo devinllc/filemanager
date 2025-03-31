@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import traceback
 
 # Add the backend directory to the path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -12,8 +13,14 @@ os.environ["DEBUG"] = "False"
 os.environ["ALLOWED_HOSTS"] = "*"
 
 # Import Django only after setting environment variables
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+try:
+    from django.core.wsgi import get_wsgi_application
+    application = get_wsgi_application()
+    print("Django application initialized successfully")
+except Exception as e:
+    print(f"ERROR initializing Django application: {str(e)}")
+    traceback.print_exc()
+    # Don't re-raise, allow handler to respond with error details
 
 # Create a simple endpoint for health checks
 def handler(request, **kwargs):
@@ -25,9 +32,10 @@ def handler(request, **kwargs):
     
     # Debug information
     print(f"Request received: {method} /{path}")
-    print(f"Headers: {request.get('headers', {})}")
+    print(f"Request body: {request.get('body', '')}")
+    print(f"Headers: {json.dumps(request.get('headers', {}))}")
     
-    # Special handling for OPTIONS method (CORS preflight)
+    # Handle all OPTIONS requests directly without going to Django
     if method == "OPTIONS":
         print(f"Handling OPTIONS request for /{path}")
         return {
@@ -35,7 +43,7 @@ def handler(request, **kwargs):
             "headers": {
                 "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Credentials": "true",
                 "Access-Control-Max-Age": "86400"
             },
@@ -43,7 +51,7 @@ def handler(request, **kwargs):
         }
     
     # Direct health check response
-    if path == "api/health":
+    if path == "api/health" or path == "health":
         print("Serving health check response")
         return {
             "statusCode": 200,
@@ -54,52 +62,34 @@ def handler(request, **kwargs):
             }),
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Headers": "*"
             }
         }
     
-    # Special handling for login endpoint
-    if path == "api/login" or path == "api/login/":
-        if method == "POST":
-            print("Handling login request")
-            try:
-                # Pass to Django application
-                return application(request, **kwargs)
-            except Exception as e:
-                print(f"Error in login: {str(e)}")
-                return {
-                    "statusCode": 500,
-                    "body": json.dumps({
-                        "error": "Login Error",
-                        "message": str(e)
-                    }),
-                    "headers": {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                        "Access-Control-Allow-Credentials": "true"
-                    }
-                }
-    
-    # For all other Django requests
+    # For all other requests, try to use Django but with error handling
     try:
         print(f"Delegating to Django application: {path}")
-        return application(request, **kwargs)
+        resp = application(request, **kwargs)
+        print(f"Django response: {resp}")
+        return resp
     except Exception as e:
-        print(f"Error in handler: {str(e)}")
+        print(f"ERROR in handler: {str(e)}")
+        traceback.print_exc()
+        
         # Return error as JSON
         return {
             "statusCode": 500,
             "body": json.dumps({
                 "error": "Server Error",
                 "message": str(e),
-                "path": path
+                "path": path,
+                "traceback": traceback.format_exc()
             }),
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*"
             }
         } 

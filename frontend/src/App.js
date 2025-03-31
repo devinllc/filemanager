@@ -90,7 +90,7 @@ function App() {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/api/profile/`, {
+        const response = await axios.get('/api/profile/', {
           headers: { Authorization: `Token ${token}` }
         });
 

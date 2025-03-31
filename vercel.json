@@ -15,36 +15,38 @@
             ],
             "dest": "backend/vercel_wsgi.py",
             "headers": {
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "86400"
+                "Access-Control-Allow-Headers": "*"
             }
         },
         {
-            "src": "/api/login/",
+            "src": "/health",
             "methods": [
                 "OPTIONS",
-                "POST"
+                "GET"
             ],
             "dest": "backend/vercel_wsgi.py",
             "headers": {
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "86400"
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
             }
         },
         {
             "src": "/api/(.*)",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+            ],
             "dest": "backend/vercel_wsgi.py",
             "headers": {
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Headers": "*"
             }
         },
         {
@@ -59,7 +61,7 @@
     "env": {
         "DJANGO_SETTINGS_MODULE": "backend.settings",
         "ALLOWED_HOSTS": "filemanager-sandy.vercel.app,frrontend.vercel.app,vercel.app",
-        "DEBUG": "False",
+        "DEBUG": "True",
         "VERCEL": "true"
     }
 }
