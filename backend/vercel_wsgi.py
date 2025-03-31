@@ -1,95 +1,75 @@
 import os
 import sys
 import json
-import traceback
 
-# Add the backend directory to the path
+# Configure paths
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Set Django settings
+# Set up environment
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 os.environ["VERCEL"] = "1"
-os.environ["DEBUG"] = "False"
+os.environ["DEBUG"] = "True"
 os.environ["ALLOWED_HOSTS"] = "*"
 
-# Import Django only after setting environment variables
-try:
-    from django.core.wsgi import get_wsgi_application
-    application = get_wsgi_application()
-    print("Django application initialized successfully")
-except Exception as e:
-    print(f"ERROR initializing Django application: {str(e)}")
-    traceback.print_exc()
-    # Don't re-raise, allow handler to respond with error details
+# Create a minimal application
+def application(environ, start_response):
+    # Basic health check response
+    status = '200 OK'
+    headers = [
+        ('Content-type', 'application/json'),
+        ('Access-Control-Allow-Origin', '*'),
+        ('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'),
+        ('Access-Control-Allow-Headers', '*')
+    ]
+    start_response(status, headers)
+    response = {'status': 'ok', 'message': 'API is responding'}
+    return [json.dumps(response).encode()]
 
-# Create a simple endpoint for health checks
-def handler(request, **kwargs):
-    """Vercel serverless handler"""
-    
-    # Get request method and path
-    method = request.get("method", "").upper()
-    path = request.get("path", "").strip("/")
-    
-    # Debug information
-    print(f"Request received: {method} /{path}")
-    print(f"Request body: {request.get('body', '')}")
-    print(f"Headers: {json.dumps(request.get('headers', {}))}")
-    
-    # Handle all OPTIONS requests directly without going to Django
-    if method == "OPTIONS":
-        print(f"Handling OPTIONS request for /{path}")
+# Simple handler for Vercel
+def handler(event, context):
+    # Basic response for direct invocation
+    if 'path' in event and event['path'].endswith('/api/health'):
         return {
-            "statusCode": 204,
-            "headers": {
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "*",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "86400"
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                'Access-Control-Allow-Headers': '*'
             },
-            "body": ""
+            'body': json.dumps({
+                'status': 'ok',
+                'message': 'Simple health check responding',
+                'environment': 'Vercel',
+                'path': event.get('path', 'unknown')
+            })
         }
     
-    # Direct health check response
-    if path == "api/health" or path == "health":
-        print("Serving health check response")
+    # Preflight response for OPTIONS requests
+    if event.get('httpMethod') == 'OPTIONS':
         return {
-            "statusCode": 200,
-            "body": json.dumps({
-                "status": "ok",
-                "message": "API is responding (direct handler)",
-                "environment": "Vercel"
-            }),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, OPTIONS",
-                "Access-Control-Allow-Headers": "*"
-            }
+            'statusCode': 204,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Max-Age': '86400'
+            },
+            'body': ''
         }
     
-    # For all other requests, try to use Django but with error handling
-    try:
-        print(f"Delegating to Django application: {path}")
-        resp = application(request, **kwargs)
-        print(f"Django response: {resp}")
-        return resp
-    except Exception as e:
-        print(f"ERROR in handler: {str(e)}")
-        traceback.print_exc()
-        
-        # Return error as JSON
-        return {
-            "statusCode": 500,
-            "body": json.dumps({
-                "error": "Server Error",
-                "message": str(e),
-                "path": path,
-                "traceback": traceback.format_exc()
-            }),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*"
-            }
-        } 
+    # For other paths, return a 501 Not Implemented for now
+    return {
+        'statusCode': 501,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': '*'
+        },
+        'body': json.dumps({
+            'status': 'error',
+            'message': 'This endpoint is not implemented in the simplified handler',
+            'path': event.get('path', 'unknown')
+        })
+    } 

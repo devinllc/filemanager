@@ -24,13 +24,22 @@ const Login = ({ login }) => {
 
                 // First, check if the API is accessible
                 try {
-                    await axios.get('/api/health', {
-                        timeout: 10000, // Increase timeout to 10 seconds
+                    // Try health check with longer timeout
+                    const healthResponse = await axios.get('/api/health', {
+                        timeout: 15000, // Further increase timeout to 15 seconds
                         // Don't throw error for status codes
-                        validateStatus: (status) => true, // Accept any status code
+                        validateStatus: () => true, // Accept any status code
                         // Don't send credentials for this check
                         withCredentials: false
                     });
+
+                    // Log health check response
+                    console.log('Health check response:', healthResponse.status, healthResponse.data);
+
+                    // If health check returns error status, throw error
+                    if (healthResponse.status >= 400) {
+                        throw new Error(`Health check failed with status ${healthResponse.status}`);
+                    }
                 } catch (apiError) {
                     console.error('API connectivity error:', apiError);
                     throw new Error('Cannot connect to the backend server. Please check if the server is running and try again later.');
