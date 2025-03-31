@@ -8,11 +8,11 @@
     ],
     "routes": [
         {
-            "src": "/(api/.+)",
+            "src": "/api/health",
             "dest": "backend/vercel_wsgi.py"
         },
         {
-            "src": "/api",
+            "src": "/api/(.*)",
             "dest": "backend/vercel_wsgi.py"
         },
         {
@@ -23,5 +23,11 @@
             "src": "/(.*)",
             "dest": "frontend/build/$1"
         }
-    ]
+    ],
+    "env": {
+        "DJANGO_SETTINGS_MODULE": "backend.settings",
+        "ALLOWED_HOSTS": "filemanager-sandy.vercel.app,vercel.app",
+        "DEBUG": "False",
+        "VERCEL": "true"
+    }
 }

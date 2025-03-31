@@ -45,6 +45,33 @@ INSTALLED_APPS = [
     'storages',  # Add storages app
 ]
 
+# Add Vercel-specific settings
+# Check if running on Vercel
+IS_VERCEL = os.environ.get('VERCEL', False)
+
+if IS_VERCEL:
+    # Configure for serverless environment
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/tmp/db.sqlite3',
+        }
+    }
+    # Disable MongoDB in Vercel for now
+    MONGO_CLIENT = None
+    MONGO_DB = None
+else:
+    # Regular database configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    # MongoDB Connection
+    MONGO_CLIENT = os.environ.get('MONGO_CLIENT', 'mongodb://localhost:27017/')
+    MONGO_DB = os.environ.get('MONGO_DB', 'filemanager_db')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -76,17 +103,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -130,10 +146,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# MongoDB Connection
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT', 'mongodb://localhost:27017/')
-MONGO_DB = os.environ.get('MONGO_DB', 'filemanager_db')
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [

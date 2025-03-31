@@ -108,7 +108,11 @@ function App() {
     // Check if API is reachable
     const checkApiConnectivity = async () => {
       try {
-        await axios.get(`${API_URL}/health/`, { timeout: 5000 });
+        await axios.get(`${API_URL}/health/`, {
+          timeout: 5000,
+          // Don't throw error for status codes
+          validateStatus: () => true
+        });
         // API is reachable, clear any existing connection errors
         if (error && error.includes('cannot connect to the backend')) {
           setError(null);

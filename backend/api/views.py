@@ -22,11 +22,29 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 import os
+import sys
 
 # Set up logger
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+
+# MongoDB connection safety
+def get_mongo_connection():
+    """
+    Safely get MongoDB connection if configured
+    """
+    if not settings.MONGO_CLIENT or not settings.MONGO_DB:
+        return None
+    
+    try:
+        import pymongo
+        client = pymongo.MongoClient(settings.MONGO_CLIENT)
+        db = client[settings.MONGO_DB]
+        return db
+    except Exception as e:
+        logging.error(f"MongoDB connection error: {str(e)}")
+        return None
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(generics.CreateAPIView):
@@ -312,17 +330,37 @@ def health_check(request):
     """
     Health check endpoint to verify API is running correctly
     """
-    try:
-        # Check database connection
-        User.objects.first()
-        db_status = "connected"
-    except Exception as e:
-        db_status = f"error: {str(e)}"
+    from django.conf import settings
     
-    return Response({
+    # Get environment info
+    is_vercel = 'VERCEL' in os.environ
+    debug_mode = settings.DEBUG
+    
+    # Basic response
+    response_data = {
         "status": "ok",
         "message": "API is running",
-        "database": db_status,
         "version": "1.0.0",
-        "environment": "production" if os.environ.get('DEBUG') == 'False' else "development"
-    })
+        "environment": {
+            "platform": "Vercel" if is_vercel else "Local",
+            "debug": debug_mode,
+            "python_version": sys.version,
+            "allowed_hosts": settings.ALLOWED_HOSTS
+        }
+    }
+    
+    # Safely try to check database connectivity
+    try:
+        User.objects.count()
+        response_data["database"] = "connected"
+    except Exception as e:
+        response_data["database"] = f"error: {str(e)}"
+    
+    # Check MongoDB if available
+    mongo_db = get_mongo_connection()
+    if mongo_db:
+        response_data["mongodb"] = "connected"
+    else:
+        response_data["mongodb"] = "not configured or error connecting"
+    
+    return Response(response_data)
