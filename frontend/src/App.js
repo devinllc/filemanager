@@ -105,7 +105,22 @@ function App() {
       }
     };
 
+    // Check if API is reachable
+    const checkApiConnectivity = async () => {
+      try {
+        await axios.get(`${API_URL}/health/`, { timeout: 5000 });
+        // API is reachable, clear any existing connection errors
+        if (error && error.includes('cannot connect to the backend')) {
+          setError(null);
+        }
+      } catch (err) {
+        console.error('API connectivity error:', err);
+        setError('We cannot connect to the backend server. Please try again later.');
+      }
+    };
+
     checkAuthStatus();
+    checkApiConnectivity();
   }, []);
 
   // Login function

@@ -8,11 +8,15 @@
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
+            "src": "/(api/.+)",
             "dest": "backend/vercel_wsgi.py"
         },
         {
-            "src": "/admin/(.*)",
+            "src": "/api",
+            "dest": "backend/vercel_wsgi.py"
+        },
+        {
+            "src": "/admin(.*)",
             "dest": "backend/vercel_wsgi.py"
         },
         {

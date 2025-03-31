@@ -22,6 +22,14 @@ const Login = ({ login }) => {
             try {
                 setError(''); // Clear any previous errors
 
+                // First, check if the API is accessible
+                try {
+                    await axios.get('/health/', { timeout: 3000 });
+                } catch (apiError) {
+                    console.error('API connectivity error:', apiError);
+                    throw new Error('Cannot connect to the backend server. Please check if the server is running and try again later.');
+                }
+
                 // Login with Firebase
                 let firebaseToken;
                 try {

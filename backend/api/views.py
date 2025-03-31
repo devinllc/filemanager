@@ -21,6 +21,7 @@ from django.utils import timezone
 import datetime
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
+import os
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -308,4 +309,20 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
-    return Response({"status": "ok", "message": "API is running"})
+    """
+    Health check endpoint to verify API is running correctly
+    """
+    try:
+        # Check database connection
+        User.objects.first()
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    return Response({
+        "status": "ok",
+        "message": "API is running",
+        "database": db_status,
+        "version": "1.0.0",
+        "environment": "production" if os.environ.get('DEBUG') == 'False' else "development"
+    })

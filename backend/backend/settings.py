@@ -132,8 +132,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # MongoDB Connection
-MONGO_CLIENT = 'mongodb://localhost:27017/'
-MONGO_DB = 'filemanager_db'
+MONGO_CLIENT = os.environ.get('MONGO_CLIENT', 'mongodb://localhost:27017/')
+MONGO_DB = os.environ.get('MONGO_DB', 'filemanager_db')
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
