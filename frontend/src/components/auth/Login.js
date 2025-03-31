@@ -27,7 +27,7 @@ const Login = ({ login }) => {
                     await axios.get('/api/health', {
                         timeout: 3000,
                         // Don't throw error for status codes
-                        validateStatus: () => true,
+                        validateStatus: (status) => true, // Accept any status code
                         // Don't send credentials for this check
                         withCredentials: false
                     });

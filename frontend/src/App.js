@@ -15,7 +15,7 @@ import UserProfile from './components/UserProfile';
 import Navbar from './components/layout/Navbar';
 
 // Set axios defaults
-axios.defaults.baseURL = 'https://filemanager-sandy.vercel.app/api';
+axios.defaults.baseURL = 'https://filemanager-sandy.vercel.app';
 axios.defaults.withCredentials = false;
 
 // Add a request interceptor to add the auth token to requests

@@ -19,10 +19,32 @@ application = get_wsgi_application()
 def handler(request, **kwargs):
     """Vercel serverless handler"""
     
-    # Simplify path handling to avoid double /api/api
+    # Get request method and path
+    method = request.get("method", "").upper()
     path = request.get("path", "").strip("/")
-    if path == "api/health" or path == "health":
-        # Direct health check response
+    
+    # Debug information
+    print(f"Request received: {method} /{path}")
+    print(f"Headers: {request.get('headers', {})}")
+    
+    # Special handling for OPTIONS method (CORS preflight)
+    if method == "OPTIONS":
+        print(f"Handling OPTIONS request for /{path}")
+        return {
+            "statusCode": 204,
+            "headers": {
+                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Max-Age": "86400"
+            },
+            "body": ""
+        }
+    
+    # Direct health check response
+    if path == "api/health":
+        print("Serving health check response")
         return {
             "statusCode": 200,
             "body": json.dumps({
@@ -39,23 +61,34 @@ def handler(request, **kwargs):
             }
         }
     
-    # Handle OPTIONS requests for CORS preflight
-    if request.get("method") == "OPTIONS":
-        return {
-            "statusCode": 204,
-            "headers": {
-                "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "86400"
-            }
-        }
+    # Special handling for login endpoint
+    if path == "api/login" or path == "api/login/":
+        if method == "POST":
+            print("Handling login request")
+            try:
+                # Pass to Django application
+                return application(request, **kwargs)
+            except Exception as e:
+                print(f"Error in login: {str(e)}")
+                return {
+                    "statusCode": 500,
+                    "body": json.dumps({
+                        "error": "Login Error",
+                        "message": str(e)
+                    }),
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
+                        "Access-Control-Allow-Credentials": "true"
+                    }
+                }
     
     # For all other Django requests
     try:
+        print(f"Delegating to Django application: {path}")
         return application(request, **kwargs)
     except Exception as e:
+        print(f"Error in handler: {str(e)}")
         # Return error as JSON
         return {
             "statusCode": 500,

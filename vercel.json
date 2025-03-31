@@ -9,22 +9,32 @@
     "routes": [
         {
             "src": "/api/health",
+            "methods": [
+                "OPTIONS",
+                "GET"
+            ],
             "dest": "backend/vercel_wsgi.py",
             "headers": {
                 "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Max-Age": "86400"
             }
         },
         {
-            "src": "/health",
+            "src": "/api/login/",
+            "methods": [
+                "OPTIONS",
+                "POST"
+            ],
             "dest": "backend/vercel_wsgi.py",
             "headers": {
                 "Access-Control-Allow-Origin": "https://frrontend.vercel.app",
-                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Max-Age": "86400"
             }
         },
         {
