@@ -199,7 +199,108 @@ After deploying the application, you'll need to set up Firebase credentials:
 2. Create a file named `firebase-credentials.json` with the following content:
 
 ```json
-{
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+login:1 Access to XMLHttpRequest at 'https://filemanager-sandy.vercel.app/api/health' from origin 'https://frrontend.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this errorAI
+App.js:132 API connectivity error: bt {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
+(anonymous) @ App.js:132
+await in (anonymous)
+(anonymous) @ App.js:138
+al @ react-dom-client.production.js:8292
+Ul @ react-dom-client.production.js:9771
+Wl @ react-dom-client.production.js:9746
+Ul @ react-dom-client.production.js:9878
+Wl @ react-dom-client.production.js:9746
+Ul @ react-dom-client.production.js:9782
+lu @ react-dom-client.production.js:11313
+su @ react-dom-client.production.js:11289
+Pu @ react-dom-client.production.js:11633
+ku @ react-dom-client.production.js:11505
+ou @ react-dom-client.production.js:11276
+nu @ react-dom-client.production.js:11071
+Fc @ react-dom-client.production.js:10490
+Dc @ react-dom-client.production.js:10419
+Tu @ react-dom-client.production.js:11626
+A @ scheduler.production.js:151Understand this errorAI
+App.js:112 
+            
+            
+           GET https://filemanager-sandy.vercel.app/api/health net::ERR_FAILED 500 (Internal Server Error)
+(anonymous) @ xhr.js:195
+xhr @ xhr.js:15
+Fn @ dispatchRequest.js:51
+Promise.then
+_request @ Axios.js:163
+request @ Axios.js:40
+(anonymous) @ Axios.js:213
+(anonymous) @ bind.js:5
+(anonymous) @ App.js:112
+(anonymous) @ App.js:138
+al @ react-dom-client.production.js:8292
+Ul @ react-dom-client.production.js:9771
+Wl @ react-dom-client.production.js:9746
+Ul @ react-dom-client.production.js:9878
+Wl @ react-dom-client.production.js:9746
+Ul @ react-dom-client.production.js:9782
+lu @ react-dom-client.production.js:11313
+su @ react-dom-client.production.js:11289
+Pu @ react-dom-client.production.js:11633
+ku @ react-dom-client.production.js:11505
+ou @ react-dom-client.production.js:11276
+nu @ react-dom-client.production.js:11071
+Fc @ react-dom-client.production.js:10490
+Dc @ react-dom-client.production.js:10419
+Tu @ react-dom-client.production.js:11626
+A @ scheduler.production.js:151Understand this errorAI
+iframe.js:308 Info: The current domain is not authorized for OAuth operations. This will prevent signInWithPopup, signInWithRedirect, linkWithPopup and linkWithRedirect from working. Add your domain (frrontend.vercel.app) to the OAuth redirect domains list in the Firebase console -> Authentication -> Settings -> Authorized domains tab.
+ll @ iframe.js:308
+(anonymous) @ iframe.js:577
+a @ iframe.js:154
+(anonymous) @ iframe.js:154
+c @ iframe.js:154
+e.vd @ iframe.js:162
+mg @ iframe.js:165
+ig @ iframe.js:165
+F.zk @ iframe.js:164
+a @ iframe.js:154
+(anonymous) @ iframe.js:154
+c @ iframe.js:154
+Rf @ iframe.js:155
+a
+Kf @ iframe.js:155
+dg @ iframe.js:161
+k.l @ iframe.js:159
+ns @ iframe.js:576
+(anonymous) @ iframe.js:577
+bj @ iframe.js:239
+b @ iframe.js:237Understand this warningAI
+login:1 Access to XMLHttpRequest at 'https://filemanager-sandy.vercel.app/api/health' from origin 'https://frrontend.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this errorAI
+Login.js:44 API connectivity error: bt {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
+onSubmit @ Login.js:44
+await in onSubmit
+(anonymous) @ Formik.tsx:860
+(anonymous) @ Formik.tsx:1214
+(anonymous) @ Formik.tsx:767
+Promise.then
+(anonymous) @ Formik.tsx:742
+(anonymous) @ Formik.tsx:1214
+(anonymous) @ Formik.tsx:834
+(anonymous) @ Formik.tsx:1214
+Lu @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+Lt @ react-dom-client.production.js:1470
+Wu @ react-dom-client.production.js:11996
+oh @ react-dom-client.production.js:14699
+rh @ react-dom-client.production.js:14667Understand this errorAI
+Login.js:28 
+            
+            
+           GET https://filemanager-sandy.vercel.app/api/health 
+           {
     "type": "service_account",
     "project_id": "filemanagerss",
     "private_key_id": "97adb5d0b2c5fcbe8ed6933415872046450acf2a",

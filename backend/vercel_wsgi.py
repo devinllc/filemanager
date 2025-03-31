@@ -1,75 +1,72 @@
-import os
-import sys
 import json
 
-# Configure paths
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-# Set up environment
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
-os.environ["VERCEL"] = "1"
-os.environ["DEBUG"] = "True"
-os.environ["ALLOWED_HOSTS"] = "*"
-
-# Create a minimal application
-def application(environ, start_response):
-    # Basic health check response
-    status = '200 OK'
-    headers = [
-        ('Content-type', 'application/json'),
-        ('Access-Control-Allow-Origin', '*'),
-        ('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'),
-        ('Access-Control-Allow-Headers', '*')
-    ]
-    start_response(status, headers)
-    response = {'status': 'ok', 'message': 'API is responding'}
-    return [json.dumps(response).encode()]
-
-# Simple handler for Vercel
 def handler(event, context):
-    # Basic response for direct invocation
-    if 'path' in event and event['path'].endswith('/api/health'):
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, OPTIONS',
-                'Access-Control-Allow-Headers': '*'
-            },
-            'body': json.dumps({
-                'status': 'ok',
-                'message': 'Simple health check responding',
-                'environment': 'Vercel',
-                'path': event.get('path', 'unknown')
-            })
-        }
+    """
+    A very simple handler for Vercel serverless functions
+    """
+    path = event.get('path', '')
+    method = event.get('httpMethod', 'GET')
     
-    # Preflight response for OPTIONS requests
-    if event.get('httpMethod') == 'OPTIONS':
+    print(f"Request received: {method} {path}")
+    print(f"Headers: {json.dumps(event.get('headers', {}))}")
+    
+    # Set CORS headers for all responses
+    headers = {
+        'Access-Control-Allow-Origin': 'https://frrontend.vercel.app',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
+        'Content-Type': 'application/json'
+    }
+    
+    # Handle OPTIONS preflight requests
+    if method == 'OPTIONS':
         return {
             'statusCode': 204,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Max-Age': '86400'
-            },
+            'headers': headers,
             'body': ''
         }
     
-    # For other paths, return a 501 Not Implemented for now
+    # Health check endpoint
+    if path.endswith('/api/health'):
+        return {
+            'statusCode': 200,
+            'headers': headers,
+            'body': json.dumps({
+                'status': 'ok',
+                'message': 'API is up and running',
+                'server_info': {
+                    'time': 'static response',
+                    'path': path,
+                    'method': method
+                }
+            })
+        }
+    
+    # Mock login endpoint
+    if path.endswith('/login') or path.endswith('/login/'):
+        if method == 'POST':
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({
+                    'status': 'success',
+                    'token': 'mock_token_for_testing',
+                    'user': {
+                        'id': 1,
+                        'username': 'testuser',
+                        'email': 'test@example.com'
+                    }
+                })
+            }
+    
+    # Default response for unhandled paths
     return {
-        'statusCode': 501,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, OPTIONS',
-            'Access-Control-Allow-Headers': '*'
-        },
+        'statusCode': 404,
+        'headers': headers,
         'body': json.dumps({
             'status': 'error',
-            'message': 'This endpoint is not implemented in the simplified handler',
-            'path': event.get('path', 'unknown')
+            'message': 'Endpoint not found',
+            'path': path
         })
     } 
